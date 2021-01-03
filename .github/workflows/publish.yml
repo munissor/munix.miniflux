@@ -24,8 +24,8 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore && dotnet tool restore
       - name: Pack
-        run: dotnet pack --include-symbols --configuration release -p:PackageVersion=${BASE_VERSION}${GITHUB_RUN_NUMBER} -p:SymbolPackageFormat=snupkg
+        run: dotnet pack --include-symbols --configuration release -p:PackageVersion=$BASE_VERSION$GITHUB_RUN_NUMBER -p:SymbolPackageFormat=snupkg
       - name: Publish nuget
-        run: dotnet nuget push Munix.Miniflux/bin/Release/Munix.Miniflux.${BASE_VERSION}${GITHUB_RUN_NUMBER}.nupkg -k ${{secrets.NUGET_API_KEY}}
+        run: dotnet nuget push Munix.Miniflux/bin/Release/Munix.Miniflux.$BASE_VERSION$GITHUB_RUN_NUMBER.nupkg -k ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
       - name: Publish symbols
-        run: dotnet nuget push Munix.Miniflux/bin/Release/Munix.Miniflux.${BASE_VERSION}${GITHUB_RUN_NUMBER}.snupkg -k ${{secrets.NUGET_API_KEY}}
+        run: dotnet nuget push Munix.Miniflux/bin/Release/Munix.Miniflux.$BASE_VERSION$GITHUB_RUN_NUMBER.snupkg -k ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
