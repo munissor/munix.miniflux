@@ -10,7 +10,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 jobs:
-  deployment:
+  build:
     runs-on: ubuntu-18.04
 
     steps:
