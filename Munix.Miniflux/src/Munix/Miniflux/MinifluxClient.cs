@@ -16,12 +16,26 @@ namespace Munix.Miniflux
         private static readonly IContentDeserializer<ErrorResponse> ErrorDeserializer
             = new JsonContentDeserializer<ErrorResponse>();
 
+        private readonly HttpMessageHandler handler;
+
         public MinifluxClient(string baseUrl, string username, string password)
-            : this(new Uri(baseUrl), username, password)
+            : this(new Uri(baseUrl), username, password, null)
         {
         }
 
-        public MinifluxClient(Uri baseUrl, string username, string password)
+        public MinifluxClient(
+           Uri baseUrl,
+           string username,
+           string password)
+           : this(baseUrl, username, password, null)
+        {
+        }
+
+        public MinifluxClient(
+            Uri baseUrl,
+            string username,
+            string password,
+            HttpMessageHandler handler)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -36,6 +50,7 @@ namespace Munix.Miniflux
             this.BaseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
             this.Username = username;
             this.Password = password;
+            this.handler = handler;
         }
 
         public MinifluxClient(string baseUrl, string token)
@@ -44,6 +59,11 @@ namespace Munix.Miniflux
         }
 
         public MinifluxClient(Uri baseUrl, string token)
+            : this(baseUrl, token, (HttpMessageHandler)null)
+        {
+        }
+
+        public MinifluxClient(Uri baseUrl, string token, HttpMessageHandler handler)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -52,6 +72,7 @@ namespace Munix.Miniflux
 
             this.BaseUrl = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
             this.Token = token;
+            this.handler = handler;
         }
 
         public Uri BaseUrl { get; }
@@ -442,7 +463,10 @@ namespace Munix.Miniflux
 
         private HttpClient CreateClient()
         {
-            var client = new HttpClient();
+            var client = this.handler != null
+                ? new HttpClient(this.handler)
+                : new HttpClient();
+
             client.BaseAddress = this.BaseUrl;
             if (this.Token != null)
             {
