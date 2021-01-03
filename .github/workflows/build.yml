@@ -21,8 +21,10 @@ jobs:
         with:
           dotnet-version: 3.1.301
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore && dotnet tool restore
       - name: Build
         run: dotnet build --no-restore
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov.info
+      - name: Coverage Report
+        run: dotnet tool run reportgenerator -reports:"**/lcov.info" -reporttypes:"Html" -targetdir:./coverage-report/unit-coverage

@@ -1,0 +1,31 @@
+name: Publish
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  BASE_VERSION: 0.0.
+
+jobs:
+  deployment:
+    environment:
+      name: Main
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.301
+      - name: Restore dependencies
+        run: dotnet restore && dotnet tool restore
+      - name: Pack
+        run: dotnet pack --include-symbols --configuration release -p:PackageVersion=${BASE_VERSION}${GITHUB_RUN_NUMBER} -p:SymbolPackageFormat=snupkg
+      - name: Publish nuget
+        run: dotnet nuget push Munix.Miniflux/bin/Release/Munix.Miniflux.${BASE_VERSION}${GITHUB_RUN_NUMBER}.nupkg -k ${{secrets.NUGET_API_KEY}}
+      - name: Publish symbols
+        run: dotnet nuget push Munix.Miniflux/bin/Release/Munix.Miniflux.${BASE_VERSION}${GITHUB_RUN_NUMBER}.snupkg -k ${{secrets.NUGET_API_KEY}}
