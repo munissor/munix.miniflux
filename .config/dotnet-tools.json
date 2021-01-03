@@ -7,6 +7,12 @@
       "commands": [
         "reportgenerator"
       ]
+    },
+    "coverlet.console": {
+      "version": "1.7.2",
+      "commands": [
+        "coverlet"
+      ]
     }
   }
 }
